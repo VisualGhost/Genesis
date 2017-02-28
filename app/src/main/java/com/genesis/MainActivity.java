@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.genesis.networking.ServerApi;
 import com.genesis.networking.model.BestSellersHistory;
-import com.genesis.rxcache.RxObservableCache;
 
 import javax.inject.Inject;
 
@@ -20,17 +19,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String DATA_LOADED_KEY = "dataLoadedKey";
-    private static final String ERROR_DATA_LOADING = "errorDataLoading";
+    private static final String DATA_LOADED = "dataLoaded";
+    private static final String ERROR_LOADING = "errorLoading";
 
     private boolean mIsDataLoaded;
     private boolean mIsError;
 
     @Inject
     public ServerApi mServerApi;
-
-    @Inject
-    public RxObservableCache mRxObservableCache;
 
 
     private ResourceObserver<BestSellersHistory> resourceObserver;
@@ -44,13 +40,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         CustomApplication.sApiComponent.inject(this);
-
-        Log.d("Test", "===> " + getLastCustomNonConfigurationInstance());
-
         setContentView(R.layout.activity_main);
-        ConnectableObservable cachedObservable = mRxObservableCache.get(MainActivity.class);
 
-        Log.d("Test", "CACHE: " + cachedObservable);
+        if (savedInstanceState != null) {
+            mIsDataLoaded = savedInstanceState.getBoolean(DATA_LOADED);
+            mIsError = savedInstanceState.getBoolean(ERROR_LOADING);
+        }
+
+        ConnectableObservable<Integer> cachedObservable = (ConnectableObservable<Integer>) getLastCustomNonConfigurationInstance();
 
         mResourceObserver = new ResourceObserver<Integer>() {
             @Override
@@ -71,14 +68,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        if (cachedObservable == null) {
+        if (cachedObservable == null && (!mIsDataLoaded && !mIsError)) {
+            Log.d("Test", "create NEW observable");
             createObservable();
         } else {
+            Log.d("Test", "Use cached");
             integerObservable = cachedObservable;
         }
 
-        integerObservable.subscribe(mResourceObserver);
-        integerObservable.connect();
+        if (integerObservable != null) {
+            integerObservable.subscribe(mResourceObserver);
+            integerObservable.connect();
+        }
     }
 
     private void createObservable() {
@@ -100,15 +101,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putBoolean(DATA_LOADED, mIsDataLoaded);
+        outState.putBoolean(ERROR_LOADING, mIsError);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mResourceObserver != null && !mResourceObserver.isDisposed()) {
-            if (!mIsDataLoaded && !mIsError) {
-                mRxObservableCache.put(MainActivity.class, integerObservable);
-            }
             mResourceObserver.dispose();
         }
         //resourceObserver.dispose();
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
-        return integerObservable;
+        return (!mIsDataLoaded && !mIsError) ? integerObservable : null;
     }
 
 
