@@ -1,4 +1,4 @@
-package com.genesis.view;
+package com.genesis.loading;
 
 
 import android.content.Context;

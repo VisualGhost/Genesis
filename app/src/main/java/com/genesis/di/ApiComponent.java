@@ -1,7 +1,7 @@
 package com.genesis.di;
 
 import com.genesis.networking.RestClient;
-import com.genesis.view.DataLoadingController;
+import com.genesis.loading.DataLoadingController;
 
 import javax.inject.Singleton;
 
