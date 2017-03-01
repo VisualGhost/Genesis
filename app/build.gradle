@@ -26,7 +26,7 @@ android {
     if (apiPropFile.canRead()) {
         apiProperties.load(new FileInputStream(apiPropFile))
     } else {
-        throw new GradleException("API properties didn't find. Check api.properties file.")
+        throw new GradleException("API properties not find")
     }
 
     buildTypes {

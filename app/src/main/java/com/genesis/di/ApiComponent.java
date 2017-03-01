@@ -1,7 +1,7 @@
 package com.genesis.di;
 
-import com.genesis.MainActivity;
 import com.genesis.networking.RestClient;
+import com.genesis.view.DataLoadingController;
 
 import javax.inject.Singleton;
 
@@ -13,6 +13,6 @@ public interface ApiComponent {
 
     RestClient getRestClient();
 
-    void inject(MainActivity activity);
+    void inject(DataLoadingController dataLoadingController);
 
- }
+}
