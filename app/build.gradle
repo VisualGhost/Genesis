@@ -66,5 +66,5 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
+    compile 'com.squareup.okhttp3:mockwebserver:3.6.0'
 }
