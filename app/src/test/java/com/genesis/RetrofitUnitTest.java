@@ -10,8 +10,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import io.reactivex.Observable;
-import io.reactivex.observers.ResourceObserver;
+import io.reactivex.observers.TestObserver;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
@@ -44,8 +46,6 @@ public class RetrofitUnitTest {
 
     @Test
     public void getBestSellersHistoryIsCorrect() throws Exception {
-        final BestSellersHistory[] bestSellersHistories = new BestSellersHistory[1];
-
         MockWebServer mockWebServer = new MockWebServer();
         mRestClient.setBaseUrl(mockWebServer.url("").toString());
         mockWebServer.enqueue(new MockResponse().setBody(MOCK_SERVER_RESPONSE));
@@ -54,24 +54,15 @@ public class RetrofitUnitTest {
         Observable<BestSellersHistory> bestSellersHistory = serverApi
                 .getBestSellersHistory(BuildConfig.API_KEY);
 
-        bestSellersHistory.subscribe(new ResourceObserver<BestSellersHistory>() {
-            @Override
-            public void onNext(BestSellersHistory bestSellersHistory) {
-                bestSellersHistories[0] = bestSellersHistory;
-            }
+        TestObserver<BestSellersHistory> testObserver = new TestObserver<>();
+        bestSellersHistory.subscribe(testObserver);
+        testObserver.assertComplete();
+        testObserver.assertNoErrors();
+        List<BestSellersHistory> histories = testObserver.values();
+        Assert.assertNotNull(histories);
+        Assert.assertEquals(1, histories.size());
 
-            @Override
-            public void onError(Throwable e) {
-                // empty
-            }
-
-            @Override
-            public void onComplete() {
-                // empty
-            }
-        });
-
-        BestSellersHistory actualHistory = bestSellersHistories[0];
+        BestSellersHistory actualHistory = histories.get(0);
 
         Assert.assertNotNull(actualHistory);
         Assert.assertEquals(2, actualHistory.getNumResults());
@@ -89,29 +80,20 @@ public class RetrofitUnitTest {
 
     @Test
     public void getRealBestSellersHistoryIsCorrect() throws Exception {
-        final BestSellersHistory[] bestSellersHistories = new BestSellersHistory[1];
-
         mRestClient.setBaseUrl(BuildConfig.BASE_URL);
         ServerApi serverApi = mApiModule.provideRestClient(mRestClient);
         Observable<BestSellersHistory> bestSellersHistory = serverApi
                 .getBestSellersHistory(BuildConfig.API_KEY);
-        bestSellersHistory.subscribe(new ResourceObserver<BestSellersHistory>() {
-            @Override
-            public void onNext(BestSellersHistory bestSellersHistory) {
-                bestSellersHistories[0] = bestSellersHistory;
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                // empty
-            }
+        TestObserver<BestSellersHistory> testObserver = new TestObserver<>();
+        bestSellersHistory.subscribe(testObserver);
+        testObserver.assertComplete();
+        testObserver.assertNoErrors();
+        List<BestSellersHistory> histories = testObserver.values();
+        Assert.assertNotNull(histories);
+        Assert.assertEquals(1, histories.size());
 
-            @Override
-            public void onComplete() {
-                // empty
-            }
-        });
-        BestSellersHistory actualHistory = bestSellersHistories[0];
+        BestSellersHistory actualHistory = histories.get(0);
 
         Assert.assertNotNull(actualHistory);
         Assert.assertTrue("Actual status: " + actualHistory.getStatus(), actualHistory.getStatus().equals("OK"));
@@ -122,8 +104,6 @@ public class RetrofitUnitTest {
 
     @Test
     public void getBestSellersHistoryAnotherApiKeyIsNotCorrect() throws Exception {
-        final BestSellersHistory[] bestSellersHistories = new BestSellersHistory[1];
-
         mRestClient.setBaseUrl(BuildConfig.BASE_URL);
         ServerApi serverApi = mApiModule.provideRestClient(mRestClient);
 
@@ -131,24 +111,14 @@ public class RetrofitUnitTest {
 
         Observable<BestSellersHistory> bestSellersHistory = serverApi
                 .getBestSellersHistory(apiKey);
-        bestSellersHistory.subscribe(new ResourceObserver<BestSellersHistory>() {
-            @Override
-            public void onNext(BestSellersHistory bestSellersHistory) {
-                bestSellersHistories[0] = bestSellersHistory;
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                // empty
-            }
-
-            @Override
-            public void onComplete() {
-                // empty
-            }
-        });
-        BestSellersHistory actualHistory = bestSellersHistories[0];
-        Assert.assertNull(actualHistory);
+        TestObserver<BestSellersHistory> testObserver = new TestObserver<>();
+        bestSellersHistory.subscribe(testObserver);
+        testObserver.assertNotComplete();
+        testObserver.assertErrorMessage("HTTP 403 Forbidden");
+        List<BestSellersHistory> histories = testObserver.values();
+        Assert.assertNotNull(histories);
+        Assert.assertEquals(0, histories.size());
     }
 
 }
