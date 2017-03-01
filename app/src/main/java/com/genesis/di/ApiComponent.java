@@ -1,6 +1,6 @@
 package com.genesis.di;
 
-import com.genesis.networking.RestClient;
+import com.genesis.networking.RestClientProvider;
 import com.genesis.loading.DataLoadingController;
 
 import javax.inject.Singleton;
@@ -11,7 +11,7 @@ import dagger.Component;
 @Component(modules = ApiModule.class)
 public interface ApiComponent {
 
-    RestClient getRestClient();
+    RestClientProvider getRestClient();
 
     void inject(DataLoadingController dataLoadingController);
 

@@ -14,14 +14,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Singleton
-public class RestClient {
+public class RestClientProvider {
 
-    private static final String TAG = RestClient.class.getSimpleName();
+    private static final String TAG = RestClientProvider.class.getSimpleName();
 
     private String mBaseUrl;
 
     @Inject
-    public RestClient() {
+    public RestClientProvider() {
         // empty
     }
 

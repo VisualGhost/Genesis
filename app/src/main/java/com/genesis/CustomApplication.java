@@ -5,7 +5,7 @@ import android.app.Application;
 
 import com.genesis.di.ApiComponent;
 import com.genesis.di.DaggerApiComponent;
-import com.genesis.networking.RestClient;
+import com.genesis.networking.RestClientProvider;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -22,8 +22,8 @@ public class CustomApplication extends Application {
         mRefWatcher = LeakCanary.install(this);
     }
 
-    private void setRestClientBaseUrl(RestClient restClient) {
-        restClient.setBaseUrl(BuildConfig.BASE_URL);
+    private void setRestClientBaseUrl(RestClientProvider restClientProvider) {
+        restClientProvider.setBaseUrl(BuildConfig.BASE_URL);
     }
 
     public ApiComponent getApiComponent() {

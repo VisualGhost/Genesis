@@ -1,7 +1,6 @@
 package com.genesis.loading;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -37,8 +36,8 @@ public class DataLoadingController {
 
     private TextView mResultTextView;
 
-    public DataLoadingController(Context context, Bundle state, TextView textView) {
-        ApiComponent apiComponent = ((CustomApplication) context.getApplicationContext())
+    public DataLoadingController(Bundle state, TextView textView) {
+        ApiComponent apiComponent = ((CustomApplication) textView.getContext().getApplicationContext())
                 .getApiComponent();
         apiComponent.inject(this);
         restoreLoadingState(state);

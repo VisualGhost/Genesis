@@ -2,7 +2,7 @@ package com.genesis;
 
 
 import com.genesis.di.ApiModule;
-import com.genesis.networking.RestClient;
+import com.genesis.networking.RestClientProvider;
 import com.genesis.networking.ServerApi;
 import com.genesis.networking.model.BestSellersHistory;
 
@@ -36,20 +36,20 @@ public class RetrofitUnitTest {
             "}";
 
     private ApiModule mApiModule;
-    private RestClient mRestClient;
+    private RestClientProvider mRestClientProvider;
 
     @Before
     public void prepareServerApi() {
         mApiModule = new ApiModule();
-        mRestClient = new RestClient();
+        mRestClientProvider = new RestClientProvider();
     }
 
     @Test
     public void getBestSellersHistoryIsCorrect() throws Exception {
         MockWebServer mockWebServer = new MockWebServer();
-        mRestClient.setBaseUrl(mockWebServer.url("").toString());
+        mRestClientProvider.setBaseUrl(mockWebServer.url("").toString());
         mockWebServer.enqueue(new MockResponse().setBody(MOCK_SERVER_RESPONSE));
-        ServerApi serverApi = mApiModule.provideRestClient(mRestClient);
+        ServerApi serverApi = mApiModule.provideServerApi(mRestClientProvider);
 
         Observable<BestSellersHistory> bestSellersHistory = serverApi
                 .getBestSellersHistory(BuildConfig.API_KEY);
@@ -80,8 +80,8 @@ public class RetrofitUnitTest {
 
     @Test
     public void getRealBestSellersHistoryIsCorrect() throws Exception {
-        mRestClient.setBaseUrl(BuildConfig.BASE_URL);
-        ServerApi serverApi = mApiModule.provideRestClient(mRestClient);
+        mRestClientProvider.setBaseUrl(BuildConfig.BASE_URL);
+        ServerApi serverApi = mApiModule.provideServerApi(mRestClientProvider);
         Observable<BestSellersHistory> bestSellersHistory = serverApi
                 .getBestSellersHistory(BuildConfig.API_KEY);
 
@@ -104,8 +104,8 @@ public class RetrofitUnitTest {
 
     @Test
     public void getBestSellersHistoryAnotherApiKeyIsNotCorrect() throws Exception {
-        mRestClient.setBaseUrl(BuildConfig.BASE_URL);
-        ServerApi serverApi = mApiModule.provideRestClient(mRestClient);
+        mRestClientProvider.setBaseUrl(BuildConfig.BASE_URL);
+        ServerApi serverApi = mApiModule.provideServerApi(mRestClientProvider);
 
         String apiKey = "45eafe06150f4a9aa430a7b914add011";
 

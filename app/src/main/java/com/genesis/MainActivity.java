@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TextView textView = (TextView) findViewById(R.id.results_id);
-        mLoadingController = new DataLoadingController(this, savedInstanceState, textView);
+        mLoadingController = new DataLoadingController(savedInstanceState, textView);
 
         if (mLoadingController.isDataLoaded()) {
             textView.setText(mLoadingController.getResult());
